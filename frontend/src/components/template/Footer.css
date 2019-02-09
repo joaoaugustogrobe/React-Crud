@@ -4,5 +4,6 @@ footer.footer{
     justify-content: flex-end;
     padding: 0px 25px;
     background-color: #fff;
-    box-shadow: var(--shadow)
+    box-shadow: var(--shadow);
+    font-size: 0.6em;
 }
