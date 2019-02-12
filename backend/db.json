@@ -1,7 +1,3 @@
 {
-    "users": [{
-        "id":1,
-        "nome": "Roppwer",
-        "email": "joaoaugustogrobe@hotmail.com"
-    }]
+  "users": []
 }
