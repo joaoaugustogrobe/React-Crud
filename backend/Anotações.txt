@@ -1,0 +1,8 @@
+Anotações gerais
+
+Banco de dados relacionais facilitados para uso no React Native:
+-pouchdb
+-realmdb
+
+Canal com muito conteudo React Native
+-https://www.youtube.com/channel/UCSfwM5u0Kce6Cce8_S72olg

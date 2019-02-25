@@ -1,0 +1,32 @@
+.Overlay{
+    position: absolute;
+    z-index: 1;
+    height: 100%;
+    width: 100%;
+    background-color: rgba(0,0,0,0.3);
+    flex-direction: column;
+}
+.errorContainer{
+    display: flex;
+    align-content: center;
+    justify-content: center;
+    flex-direction: column;
+}
+.ErrorTitle{
+    background-color: #f1f1f1;
+    text-align: center;
+    line-height: 75px;
+    font-size: 30px;
+}
+.ErrorDescription{
+    background-color: #f1f1f1;
+    text-align: center;
+    line-height: 75px;
+}
+.ErrorIcon{
+    margin-top: 30vh;
+    margin-bottom: 15vh;
+    width: 100%;
+    font-size: 5em;
+    text-align: center;
+}

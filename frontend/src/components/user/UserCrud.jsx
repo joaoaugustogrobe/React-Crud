@@ -11,6 +11,8 @@ const headerProps = {
 
 const baseUrl = 'http://localhost:3001/persons'
 const initialState = {
+    connected : false,
+    nextConnectionTry: 0,
     user: {Name:'', Description:'', ID_User:0},
     list: []
 }
@@ -19,11 +21,31 @@ export default class UserCrud extends Component{
     state = {...initialState}
 
     componentWillMount(){
-        axios(baseUrl).then(resp =>{
-            this.setState({list: resp.data})
-        }).catch(err=>{
-            console.log(err)
-        })
+        this.verifyConnection()
+
+        setInterval(() => {
+            if(!this.state.connected) 
+                this.verifyConnection()
+                console.log(this.state.nextConnectionTry)
+        }, 1000) //Se desconectado, a cada 10 segundos tenta reconectar ao servidor (1 segundo diminui o tempo na tela)
+    }
+
+    verifyConnection(){
+        if(this.state.nextConnectionTry === 0){ 
+            axios(baseUrl).then(resp =>{
+                this.setState({connected: true,list: resp.data})
+                this.props.setConnection("Connected", "Connected")
+                return true;
+            }).catch(err=>{
+                this.setState({nextConnectionTry: 10, connected: false, list: []})
+                console.log(err)
+                this.props.setConnection("Disconnected", "Server offline.")
+                return false;
+            })
+
+        }else
+            this.setState( {nextConnectionTry: this.state.nextConnectionTry - 1} )
+            return false;
     }
 
     clear(){
@@ -32,9 +54,12 @@ export default class UserCrud extends Component{
 
 
     save(){
+        if(this.verifyConnection())
+            return
+
         const nameForm = document.getElementById("nameForm")
         const emailForm = document.getElementById("emailForm")
-        if(nameForm.value === ''){  
+        if(nameForm.value === ''){
             nameForm.classList.add("error")
             nameForm.addEventListener("click", () => nameForm.classList.remove("error"))
             return}
@@ -154,15 +179,14 @@ export default class UserCrud extends Component{
         })
     }
     
-    //if(form.classList.value.includes("error"))
-    //   form.classList.remove("error")}}
+    //requisição GET com a API, se der sucesso ele troca o estado da aplicação para conectado
 
     render(){
         return(
-            <Main {...headerProps}>
-                {this.renderForm()}
-                {this.renderTable()}
-            </Main>
+        <Main {...headerProps}>
+            {this.renderForm()}
+            {this.renderTable()}
+        </Main>
         )
     }
 }
