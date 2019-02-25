@@ -10,10 +10,11 @@ export default props => {
     let myProps = props
 
    
-
+    //<Route exact path='/' component={Home}/>
     return(
     <Switch>
-        <Route exact path='/' component={Home}/>
+        
+        <Route exact path='/' render={props => <Home {...myProps} />}/>
         <Route path='/users' render={props => <UserCrud {...myProps} />}/>
         <Redirect from='*' to='/'/>
     </Switch>

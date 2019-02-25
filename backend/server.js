@@ -3,6 +3,8 @@ const express = require('express')
 const mysql = require('mysql')
 const bodyparser = require('body-parser')
 const cors = require('cors')
+const jwt = require('jsonwebtoken')
+const md5 = require('md5')
 
 
 var app = express()
@@ -25,9 +27,139 @@ const mysqlConnection = mysql.createConnection({
   }
 })
 
-app.get("/"), (req,res)=>{
-  res.send("Connected!");
+
+/*
+const sgMail = require('@sendgrid/mail');
+sgMail.setApiKey(process.env.SENDGRID_API_KEY);
+const msg = {
+  to: 'joaoaugustogrobe@hotmail.com',
+  from: 'sempreverde@support.com',
+  subject: 'Password recovery',
+  text: 'Reset your pass here',
+  html: '<strong>and easy to do anywhere, even with Node.js</strong>',
+};
+sgMail.send(msg);
+*/
+
+
+
+app.get("/", (req,res)=>{
+  console.log('GET!')
+  res.json({
+    message:"Logged in"
+  })
+})
+
+
+//TODO - add error message when user already exists
+app.post("/register", (req,res)=>{
+  const user = {...req.body} //requires username, password and email
+  user.password = md5(user.password) //encrypt user pass using MD5
+
+  let rBody = req.body;
+  let sql = "SET @ID_Login = 0;SET @username = ?;SET @password = ?;SET @email = ?;\
+    CALL LoginAddOrEdit(@ID_Login,@username,@password, @email);"; //set SQL command to call stored procedure
+     mysqlConnection.query(sql,[0, rBody.username,rBody.password, rBody.email], (err, rows, fields)=>{
+      //0 as id -> add new Login
+       if(!err)
+         rows.forEach(element=>{ //used to return the added login
+           if(element.constructor == Array)
+           	res.send({
+           		ID_User: element[0].ID_login,
+           		Name: rBody.username,
+           		Description: rBody.email
+           	})
+         })
+       else
+         console.log(err)
+         res.status(500).json({
+           message: "cannot register",
+           token: null
+         })
+     })
+})
+
+app.post("/login", (req,res)=>{
+  const user = {...req.body} //user.username and user.password stored into user. req.body must have it
+  //select this user from DB
+  mysqlConnection.query('SELECT * FROM Login WHERE username = ?;',[req.body.username], (err, rows, fields)=>{
+    //if error or not found username, return token null
+    if(err || rows.length === 0)
+      res.status(401).json({
+        message: 'Username or password invalid',
+        token: null
+      })
+    else{ //user has been found
+      //encript body password and compare with db password
+      if(md5(user.password) === rows[0].password_hash){
+        //generate a token
+        const loggedUser = rows[0]
+        jwt.sign({loggedUser}, 'secret', (err, token) => {
+          res.json({
+            message: 'Valid username and password. Connected!',
+            token: token,
+            loggedUser
+          })
+        })
+      }else{//user has been found, but send a wrong pass
+        res.status(401).json({
+          message: 'Username or password invalid',
+          token: null
+        })
+      }
+    }
+  })
+})
+
+
+
+app.post("/posts",verifyToken, (req,res)=>{
+  jwt.verify(req.token, 'secret', (err, authData) => {
+    if(err){
+      res.status(401).json({message:err})
+      return
+    }
+
+    res.json({
+      message: 'Logged-in',
+      authData
+    })
+
+
+  })
+  res.json({
+    message:"Logged in"
+  })
+})
+function verifyToken(req, res, next){
+    //FORMAT OF TOKEN:
+      //authorization: Bearer <acess_token>
+
+    //get auth header value
+    const bearerHeader = req.headers['authorization']
+    //check if not undefined
+    if(typeof bearerHeader === 'undefined'){
+        res.status(401).json({message:"Token not provided."})
+        return
+    }
+    //split
+    const [,bearer] = bearerHeader.split(' ');
+    req.token=bearer
+
+    jwt.verify(bearer, 'secret', (err, decoded) => {
+      if(err){
+        return res.status(401).json({
+          success: false,
+          message: 'Token is not valid'})
+      }else{
+        req.decoded = decoded
+      }
+    })
+    next()
 }
+
+
+
 //list of all persons
 app.get("/persons", (req,res)=>{
   console.log('alguem logou!')
@@ -117,4 +249,4 @@ app.put("/persons", (req,res)=>{
 })
 
 
-app.listen(3001, () => {console.log('server on!')})
+app.listen(3001, () => {console.log('Server started on port 3001')})

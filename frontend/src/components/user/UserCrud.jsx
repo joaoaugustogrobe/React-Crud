@@ -20,42 +20,43 @@ const initialState = {
 export default class UserCrud extends Component{
     state = {...initialState}
 
+    
     componentWillMount(){
-        this.verifyConnection()
-
-        setInterval(() => {
-            if(!this.state.connected) 
-                this.verifyConnection()
-                console.log(this.state.nextConnectionTry)
-        }, 1000) //Se desconectado, a cada 10 segundos tenta reconectar ao servidor (1 segundo diminui o tempo na tela)
+        //Ainda sera necessario fazer a conexão quando o componente for montado, solicitando a lista de usuarios
+        //this.props.setConnection("Disconnected", "Connecting...") //Loading while not connected
+        this.verifyConnection() //Verify connection
+            
     }
-
-    verifyConnection(){
-        if(this.state.nextConnectionTry === 0){ 
-            axios(baseUrl).then(resp =>{
+    async verifyConnection(){
+        console.log(this.state.nextConnectionTry)
+        if(this.state.nextConnectionTry === 0){
+            this.props.setConnection("Disconnected", "Connecting...")
+            await axios(baseUrl).then(resp =>{
+                console.log("!")
                 this.setState({connected: true,list: resp.data})
                 this.props.setConnection("Connected", "Connected")
                 return true;
             }).catch(err=>{
-                this.setState({nextConnectionTry: 10, connected: false, list: []})
+                this.setState({connected: false, list: []})
                 console.log(err)
                 this.props.setConnection("Disconnected", "Server offline.")
+                setTimeout(() => this.verifyConnection(), 10000)// after 10s retry connection
                 return false;
             })
-
         }else
             this.setState( {nextConnectionTry: this.state.nextConnectionTry - 1} )
             return false;
     }
+    
 
     clear(){
         this.setState({user: initialState.user})
     }
 
 
-    save(){
-        if(this.verifyConnection())
-            return
+    async save(){
+        await this.verifyConnection()
+        if(!this.state.connected) return
 
         const nameForm = document.getElementById("nameForm")
         const emailForm = document.getElementById("emailForm")

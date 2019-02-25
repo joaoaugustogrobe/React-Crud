@@ -10,13 +10,17 @@ import Logo from '../components/template/Logo'
 import Footer from '../components/template/Footer'
 import Nav from '../components/template/Nav'
 import Overlay from '../components/template/Overlay'
+import axios from 'axios'
 
+const baseUrl = 'http://localhost:3001/persons'
 
 export default class App extends Component{
+
     initialState = {
-        connection: "Connected",
-        connectionDescription: "Connected",
-        setConnection: this.setConnection.bind(this)
+        connection: "Disconnected",
+        connectionDescription: "Connecting...",
+        setConnection: this.setConnection.bind(this),
+        nextConnectionTry: 0
     }
 
     setConnection(connection, connectionDescription){
@@ -24,8 +28,27 @@ export default class App extends Component{
     }
     state = this.initialState
 
+    //Aqui faremos a conexão e testaremos o token
+    async verifyConnection(){
+        if(this.state.nextConnectionTry === 0){ 
+            await axios(baseUrl).then(resp =>{
+                this.props.setState( {connection:"Connected", connectionDescription:"Connected"})
+                console.log("Conectado!")
+                return true;
+            }).catch(err=>{
+                this.setState({nextConnectionTry: 10, connection:"Disconnected", connectionDescription:"Server offline"})
+                console.log(err)
+                
+                return false;
+            })
+        }else
+            this.setState( {nextConnectionTry: this.state.nextConnectionTry - 1} )
+            return false;
+    }
+    
+
+
     render(){
-        console.log(this.state)
         return(
         <BrowserRouter>
             <div className="app">
