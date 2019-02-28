@@ -3,6 +3,8 @@ import {Switch, Route, Redirect} from 'react-router'
 
 import Home from '../components/home/Home'
 import UserCrud from '../components/user/UserCrud'
+import Login from '../components/login/Login'
+import Register from '../components/register/Register'
 
 
 
@@ -14,8 +16,10 @@ export default props => {
     return(
     <Switch>
         
-        <Route exact path='/' render={props => <Home {...myProps} />}/>
+        <Route exact path='/home' render={props => <Home {...myProps} />}/>
         <Route path='/users' render={props => <UserCrud {...myProps} />}/>
+        <Route path='/login' render={props => <Login {...myProps} />}/>
+        <Route path='/register' render={props => <Register {...myProps} />}/>
         <Redirect from='*' to='/'/>
     </Switch>
     )

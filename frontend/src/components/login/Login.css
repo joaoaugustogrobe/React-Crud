@@ -1,0 +1,11 @@
+.row{
+    margin: 25px 0px;
+}
+.btn-secundary:hover{
+    background: #007bff;
+    color: white;
+    text-decoration: none;
+}
+.btn-secundary{
+    margin: 0px 8px;
+}

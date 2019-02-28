@@ -3,6 +3,7 @@ import 'font-awesome/css/font-awesome.min.css'
 import './App.css'
 import React, {Component} from 'react'
 import {BrowserRouter} from 'react-router-dom'
+//import jwt from 'jsonwebtoken'
 //      {HashRouter} faz a mesma navegação usando # 
 
 import Routes from './Routes'
@@ -44,6 +45,10 @@ export default class App extends Component{
         }else
             this.setState( {nextConnectionTry: this.state.nextConnectionTry - 1} )
             return false;
+    }
+    componentDidMount(){
+        //let token = localStorage.getItem('SessionToken')
+        //const decoded = jwt.decode(token)
     }
     
 

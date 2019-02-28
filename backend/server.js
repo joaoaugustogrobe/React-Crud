@@ -53,13 +53,14 @@ app.get("/", (req,res)=>{
 
 //TODO - add error message when user already exists
 app.post("/register", (req,res)=>{
+  console.log("Registrando " + req.body.username )
   const user = {...req.body} //requires username, password and email
   user.password = md5(user.password) //encrypt user pass using MD5
 
   let rBody = req.body;
-  let sql = "SET @ID_Login = 0;SET @username = ?;SET @password = ?;SET @email = ?;\
+  let sql = "SET @ID_Login = ?;SET @username = ?;SET @password = ?;SET @email = ?;\
     CALL LoginAddOrEdit(@ID_Login,@username,@password, @email);"; //set SQL command to call stored procedure
-     mysqlConnection.query(sql,[0, rBody.username,rBody.password, rBody.email], (err, rows, fields)=>{
+     mysqlConnection.query(sql,[0, rBody.username,md5(rBody.password), rBody.email], (err, rows, fields)=>{
       //0 as id -> add new Login
        if(!err)
          rows.forEach(element=>{ //used to return the added login
@@ -71,11 +72,20 @@ app.post("/register", (req,res)=>{
            	})
          })
        else
-         console.log(err)
-         res.status(500).json({
-           message: "cannot register",
-           token: null
-         })
+         //console.log(err)
+        if(err.code === 'ER_DUP_ENTRY'){
+          console.log("Usuario já existe")
+          res.status(409).json({
+            message: "User already exists",
+            token: null
+          })
+        }
+        else{
+            res.status(500).json({
+              message: "cannot register",
+              token: null
+            })
+        }
      })
 })
 
@@ -94,7 +104,9 @@ app.post("/login", (req,res)=>{
       if(md5(user.password) === rows[0].password_hash){
         //generate a token
         const loggedUser = rows[0]
-        jwt.sign({loggedUser}, 'secret', (err, token) => {
+        delete loggedUser.password_hash //we dont want send password as payload
+        delete loggedUser.CreatedAt //CreatedAt is irrelevant as payload
+        jwt.sign({loggedUser}, process.env.JWT_SECRET, (err, token) => {
           res.json({
             message: 'Valid username and password. Connected!',
             token: token,
@@ -114,7 +126,7 @@ app.post("/login", (req,res)=>{
 
 
 app.post("/posts",verifyToken, (req,res)=>{
-  jwt.verify(req.token, 'secret', (err, authData) => {
+  jwt.verify(req.token, process.env.JWT_SECRET, (err, authData) => {
     if(err){
       res.status(401).json({message:err})
       return
@@ -146,7 +158,7 @@ function verifyToken(req, res, next){
     const [,bearer] = bearerHeader.split(' ');
     req.token=bearer
 
-    jwt.verify(bearer, 'secret', (err, decoded) => {
+    jwt.verify(bearer, process.env.JWT_SECRET, (err, decoded) => {
       if(err){
         return res.status(401).json({
           success: false,
