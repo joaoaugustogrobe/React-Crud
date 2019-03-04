@@ -7,3 +7,19 @@ footer.footer{
     box-shadow: var(--shadow);
     font-size: 0.6em;
 }
+
+.logout a{
+    background-color: var(--bg-dark);
+    display: block;
+    text-decoration: none;
+    color: #fff;
+    font-weight: 300;
+    height: 100%;
+    padding: 0 15px;
+    align-items: center;
+}
+.logout a:hover{
+    background: linear-gradient(135deg, #10690D 0%, #1ECC1A 100%);
+    text-decoration: none;
+    color: #fff;
+}

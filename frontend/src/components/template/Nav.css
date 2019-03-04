@@ -17,6 +17,7 @@ aside.menu-area{
     background: linear-gradient(135deg, #10690D 0%, #1ECC1A 100%)
 }
 
+
 @media(max-width: 768px){
     .menu{
         display: flex;

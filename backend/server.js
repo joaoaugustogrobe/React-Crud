@@ -125,24 +125,24 @@ app.post("/login", (req,res)=>{
 
 
 
-app.post("/posts",verifyToken, (req,res)=>{
+app.post("/auth",verifyToken, (req,res)=>{//Verify if token is valid
   jwt.verify(req.token, process.env.JWT_SECRET, (err, authData) => {
     if(err){
       res.status(401).json({message:err})
       return
     }
-
-    res.json({
+    console.log('Verify')
+    res.status(200).json({
       message: 'Logged-in',
       authData
     })
-
-
   })
-  res.json({
-    message:"Logged in"
-  })
+  // console.log('Verify')
+  // res.json({
+  //   message:"Logged in"
+  // })
 })
+
 function verifyToken(req, res, next){
     //FORMAT OF TOKEN:
       //authorization: Bearer <acess_token>
@@ -156,6 +156,7 @@ function verifyToken(req, res, next){
     }
     //split
     const [,bearer] = bearerHeader.split(' ');
+    console.log(bearer)
     req.token=bearer
 
     jwt.verify(bearer, process.env.JWT_SECRET, (err, decoded) => {

@@ -25,16 +25,16 @@ export default class UserCrud extends Component{
         //Ainda sera necessario fazer a conexão quando o componente for montado, solicitando a lista de usuarios
         //this.props.setConnection("Disconnected", "Connecting...") //Loading while not connected
         this.verifyConnection() //Verify connection
-            
+        console.log(this.props)
     }
     async verifyConnection(){
-        console.log(this.state.nextConnectionTry)
+        //console.log(this.state.nextConnectionTry)
         if(this.state.nextConnectionTry === 0){
-            this.props.setConnection("Disconnected", "Connecting...")
+            //this.props.setConnection("Disconnected", "Connecting...")
             await axios(baseUrl).then(resp =>{
-                console.log("!")
+                //console.log("!")
                 this.setState({connected: true,list: resp.data})
-                this.props.setConnection("Connected", "Connected")
+                //this.props.setConnection("Connected", "Connected")
                 return true;
             }).catch(err=>{
                 this.setState({connected: false, list: []})
@@ -44,7 +44,8 @@ export default class UserCrud extends Component{
                 return false;
             })
         }else
-            this.setState( {nextConnectionTry: this.state.nextConnectionTry - 1} )
+            //this.setState( {nextConnectionTry: this.state.nextConnectionTry - 1} )
+            this.setState( {nextConnectionTry: 10} )
             return false;
     }
     

@@ -5,19 +5,32 @@ import Home from '../components/home/Home'
 import UserCrud from '../components/user/UserCrud'
 import Login from '../components/login/Login'
 import Register from '../components/register/Register'
+import WithAuth from '../components/Util/WithAuth'
 
 
 
 export default props => {
     let myProps = props
+    let ProtectedUser = WithAuth(UserCrud)
 
-   
+    //Outras formas de fazer o link
     //<Route exact path='/' component={Home}/>
+    //<Route path='/users' render={props => <UserCrud {...myProps} />}/>
     return(
     <Switch>
+        <Route path='/home' render={props => <Home {...myProps} />}/>
+
         
-        <Route exact path='/home' render={props => <Home {...myProps} />}/>
-        <Route path='/users' render={props => <UserCrud {...myProps} />}/>
+        <Route
+            path='/users'
+            render={
+                (props) =>  <ProtectedUser {...myProps}/>
+            }
+        />
+
+
+        <Route exact path='/' render={props => <Home {...myProps} />}/>
+
         <Route path='/login' render={props => <Login {...myProps} />}/>
         <Route path='/register' render={props => <Register {...myProps} />}/>
         <Redirect from='*' to='/'/>

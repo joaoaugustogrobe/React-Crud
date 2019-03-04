@@ -13,28 +13,28 @@ import Nav from '../components/template/Nav'
 import Overlay from '../components/template/Overlay'
 import axios from 'axios'
 
-const baseUrl = 'http://localhost:3001/persons'
+const baseUrl = 'http://localhost:3001/'
 
 export default class App extends Component{
-
-    initialState = {
-        connection: "Disconnected",
-        connectionDescription: "Connecting...",
-        setConnection: this.setConnection.bind(this),
-        nextConnectionTry: 0
+    constructor(props){
+        super(props)
+        this.state = {
+            connection: "Disconnected",
+            connectionDescription: "Connecting...",
+            setConnection: this.setConnection.bind(this),
+            nextConnectionTry: 0,
+            authenticated: false
+        }
     }
-
-    setConnection(connection, connectionDescription){
+    setConnection(connection, connectionDescription){ //If connection is !== of Connected, overlay pop up (Check overlay component)
         this.setState({connection, connectionDescription})
     }
-    state = this.initialState
 
-    //Aqui faremos a conexão e testaremos o token
+    /*
     async verifyConnection(){
         if(this.state.nextConnectionTry === 0){ 
             await axios(baseUrl).then(resp =>{
                 this.props.setState( {connection:"Connected", connectionDescription:"Connected"})
-                console.log("Conectado!")
                 return true;
             }).catch(err=>{
                 this.setState({nextConnectionTry: 10, connection:"Disconnected", connectionDescription:"Server offline"})
@@ -46,9 +46,24 @@ export default class App extends Component{
             this.setState( {nextConnectionTry: this.state.nextConnectionTry - 1} )
             return false;
     }
+    */
     componentDidMount(){
-        //let token = localStorage.getItem('SessionToken')
-        //const decoded = jwt.decode(token)
+        let token = localStorage.getItem('SessionToken')
+        var headers = {
+            'Authorization': `bearer ${token}`
+        }
+        axios.post(`${baseUrl}auth`,'', {headers: headers} ).then(resp => {//pass token as header
+            console.log(resp)
+            this.setState( {connection:"Connected", connectionDescription:"Connected", authenticated: true} )//Connected AND authenticated
+        }).catch(err => {
+            console.log(err)
+            if(err.response.status === 401){
+                this.setState( {connection:"Connected", connectionDescription:"Connected", authenticated:false} )//Connected but not authenticated
+            }else{
+            console.log(err.response)
+            this.setState({nextConnectionTry: 10, connection:"Disconnected", connectionDescription:"Server offline"})//not cnonnected
+            }
+        })
     }
     
 
@@ -59,7 +74,7 @@ export default class App extends Component{
             <div className="app">
                 <Overlay {...this.state}/>
                 <Logo />
-                <Nav />
+                <Nav {...this.state}/>
                 <Routes {...this.state}/>
                 <Footer />
             </div>
