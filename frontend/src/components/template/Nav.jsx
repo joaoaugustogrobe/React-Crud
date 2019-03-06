@@ -24,7 +24,7 @@ export default props => {
                         <i className="fa fa-home"></i>  Início
                     </Link>
                     <Link to="/users">
-                        <i className="fa fa-users"></i>  Usuários
+                        <i className="fa fa-tasks"></i>  Testes
                     </Link>
                 </nav>
             </aside>

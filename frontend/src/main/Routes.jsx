@@ -2,7 +2,7 @@ import React from 'react'
 import {Switch, Route, Redirect} from 'react-router'
 
 import Home from '../components/home/Home'
-import UserCrud from '../components/user/UserCrud'
+import CrudTests from '../components/user/CrudTests'
 import Login from '../components/login/Login'
 import Register from '../components/register/Register'
 import WithAuth from '../components/Util/WithAuth'
@@ -11,7 +11,7 @@ import WithAuth from '../components/Util/WithAuth'
 
 export default props => {
     let myProps = props
-    let ProtectedUser = WithAuth(UserCrud)
+    let ProtectedTestsPage = WithAuth(CrudTests)
 
     //Outras formas de fazer o link
     //<Route exact path='/' component={Home}/>
@@ -24,7 +24,7 @@ export default props => {
         <Route
             path='/users'
             render={
-                (props) =>  <ProtectedUser {...myProps}/>
+                (props) =>  <ProtectedTestsPage {...myProps}/>
             }
         />
 

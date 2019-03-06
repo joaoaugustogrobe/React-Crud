@@ -57,9 +57,9 @@ export default class Login extends Component{
             }
             console.log(`${baseUrl}/register`)
             axios.post(`${baseUrl}/register`,user).then(resp =>{
-                //console.log(resp)
-                console.log(resp.status)
-                this.newToast("Usuário cadastrado com sucesso!");
+                localStorage.setItem('SessionToken', resp.data.token)
+                this.newToast("Usuário cadastrado com sucesso!")
+                window.location.href = "/home"
             }).catch(err => {
                 console.log(err.response.status)
                 switch(err.response.status){

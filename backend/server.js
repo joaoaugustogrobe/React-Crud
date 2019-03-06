@@ -51,7 +51,7 @@ app.get("/", (req,res)=>{
 })
 
 
-//TODO - add error message when user already exists
+
 app.post("/register", (req,res)=>{
   console.log("Registrando " + req.body.username )
   const user = {...req.body} //requires username, password and email
@@ -64,13 +64,26 @@ app.post("/register", (req,res)=>{
       //0 as id -> add new Login
        if(!err)
          rows.forEach(element=>{ //used to return the added login
-           if(element.constructor == Array)
-           	res.send({
-           		ID_User: element[0].ID_login,
-           		Name: rBody.username,
-           		Description: rBody.email
-           	})
-         })
+            if(element.constructor == Array){
+              let loggedUser = {
+                ID_login: element[0].ID_login,
+                username: rBody.username,
+                email: rBody.email,
+                level: 0
+              }
+              jwt.sign({loggedUser}, process.env.JWT_SECRET, (err, token) => {
+              res.json({
+                message: 'Successful Registred!',
+                token: token,
+                loggedUser
+              })
+            })
+           	// res.send({
+           	// 	ID_User: element[0].ID_login,
+           	// 	Name: rBody.username,
+           	// 	Description: rBody.email
+           	// })
+          }})
        else
          //console.log(err)
         if(err.code === 'ER_DUP_ENTRY'){
@@ -126,6 +139,7 @@ app.post("/login", (req,res)=>{
 
 
 app.post("/auth",verifyToken, (req,res)=>{//Verify if token is valid
+  console.log(req.headers)
   jwt.verify(req.token, process.env.JWT_SECRET, (err, authData) => {
     if(err){
       res.status(401).json({message:err})
@@ -145,7 +159,7 @@ app.post("/auth",verifyToken, (req,res)=>{//Verify if token is valid
 
 function verifyToken(req, res, next){
     //FORMAT OF TOKEN:
-      //authorization: Bearer <acess_token>
+      //authorization: bearer <acess_token>
 
     //get auth header value
     const bearerHeader = req.headers['authorization']

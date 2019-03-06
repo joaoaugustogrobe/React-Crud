@@ -3,7 +3,6 @@ import 'font-awesome/css/font-awesome.min.css'
 import './App.css'
 import React, {Component} from 'react'
 import {BrowserRouter} from 'react-router-dom'
-//import jwt from 'jsonwebtoken'
 //      {HashRouter} faz a mesma navegação usando # 
 
 import Routes from './Routes'
@@ -30,23 +29,6 @@ export default class App extends Component{
         this.setState({connection, connectionDescription})
     }
 
-    /*
-    async verifyConnection(){
-        if(this.state.nextConnectionTry === 0){ 
-            await axios(baseUrl).then(resp =>{
-                this.props.setState( {connection:"Connected", connectionDescription:"Connected"})
-                return true;
-            }).catch(err=>{
-                this.setState({nextConnectionTry: 10, connection:"Disconnected", connectionDescription:"Server offline"})
-                console.log(err)
-                
-                return false;
-            })
-        }else
-            this.setState( {nextConnectionTry: this.state.nextConnectionTry - 1} )
-            return false;
-    }
-    */
     componentDidMount(){
         let token = localStorage.getItem('SessionToken')
         var headers = {
@@ -57,12 +39,16 @@ export default class App extends Component{
             this.setState( {connection:"Connected", connectionDescription:"Connected", authenticated: true} )//Connected AND authenticated
         }).catch(err => {
             console.log(err)
-            if(err.response.status === 401){
-                this.setState( {connection:"Connected", connectionDescription:"Connected", authenticated:false} )//Connected but not authenticated
-            }else{
-            console.log(err.response)
-            this.setState({nextConnectionTry: 10, connection:"Disconnected", connectionDescription:"Server offline"})//not cnonnected
-            }
+            if(err.response){
+                if(err.response.status === 401){
+                    console.log('a')
+                    this.setState( {connection:"Connected", connectionDescription:"Connected", authenticated:false} )//Connected but not authenticated
+                }else{
+                    console.log('b')
+                    this.setState({nextConnectionTry: 10, connection:"Disconnected", connectionDescription:"Server offline"})//not cnonnected
+                }
+            }else
+            this.setState({nextConnectionTry: 10, connection:"Disconnected", connectionDescription:"Server offline"})//Server offline
         })
     }
     

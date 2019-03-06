@@ -54,6 +54,7 @@ export default class Login extends Component{
                 console.log(resp)
                 localStorage.setItem('SessionToken', resp.data.token)
                 this.newToast("Bem vindo!");
+                window.location.href = "/home"
             }).catch(err => {
                 switch(err.response.status){
                     case 401: this.newToast("Nome de usuário ou senha errados. Por favor tente outra vez.");break

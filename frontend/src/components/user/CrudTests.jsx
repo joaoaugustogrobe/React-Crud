@@ -1,12 +1,13 @@
 import React, {Component} from 'react'
 import Main from '../template/Main'
 import axios from 'axios'
-import './UserCrud.css'
+import Form from '../Util/Form'
+import './CrudTests.css'
 
 const headerProps = {
-    icon: 'users',
-    title: 'Usuários',
-    subtitle: 'Cadastro de usuários: Create, Read, Update, Delete!'
+    icon: 'tasks',
+    title: 'Testes',
+    subtitle: 'Painel de testes'
 }
 
 const baseUrl = 'http://localhost:3001/persons'
@@ -16,6 +17,7 @@ const initialState = {
     user: {Name:'', Description:'', ID_User:0},
     list: []
 }
+
 
 export default class UserCrud extends Component{
     state = {...initialState}
@@ -99,7 +101,7 @@ export default class UserCrud extends Component{
         return(
             <div className="form">
                 <div className="row">
-                    <div className="col-12 col-md-6">
+                    <div className="col-12 col-md-3">
                         <div className="form-group">
                             <label>Nome</label>
                             <input type="text" className="form-control" id='nameForm'

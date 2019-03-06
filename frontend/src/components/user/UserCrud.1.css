@@ -1,0 +1,7 @@
+.error{
+    border-color: red;
+    border-bottom-width: 1px;
+    border-right-width: 3px;
+    background-color: rgba(200,0,0,0.03);
+}
+
