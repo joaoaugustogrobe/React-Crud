@@ -46,6 +46,7 @@ export default class Login extends Component{
     handleSubmit(e){
         e.preventDefault()
         if(this.state.Username && this.state.Password){
+            console.log("as")
             let user={
                 username:this.state.username,
                 password:this.state.password
@@ -56,6 +57,7 @@ export default class Login extends Component{
                 this.newToast("Bem vindo!");
                 window.location.href = "/home"
             }).catch(err => {
+                console.log("as")
                 switch(err.response.status){
                     case 401: this.newToast("Nome de usuário ou senha errados. Por favor tente outra vez.");break
                     default:  this.newToast("Ocorreu um erro com o servidor, tente novamente mais tarde.")
@@ -75,7 +77,7 @@ export default class Login extends Component{
             text:"Username",
             textHelper:"*Obrigatorio",
             placeholder:"Insira seu RA",
-            setFormValid: this.setFormValid.bind(this) || 'a',
+            setFormValid: this.setFormValid.bind(this),
             validation: [{
                     validationType:"numbers",
                     textWhenInvalid:"Seu RA deve conter apenas números."},

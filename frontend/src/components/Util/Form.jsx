@@ -89,7 +89,7 @@ export default class Form extends Component{
     render(){
 
         return(
-        <div className="col-12 col-md-6">
+        <div className={`col-${this.props.widthM || 12} col-md-${this.props.width || 6}`}>
             <div className="form-group">
                 <label>{this.state.text}</label>
                 <input type={this.state.type} className={`form-control ${!this.state.invalidList.length > 0 ? 'valid':'invalid' }`} id={this.state.text}

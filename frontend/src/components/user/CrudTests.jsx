@@ -13,47 +13,35 @@ const headerProps = {
 const baseUrl = 'http://localhost:3001/persons'
 const initialState = {
     connected : false,
-    nextConnectionTry: 0,
-    user: {Name:'', Description:'', ID_User:0},
-    list: []
+    testForm: {name:'',Name:false, description:'',Description:false, args:'', Args:false},//args: f(x)... valid args: true or false (form validation)
+    list: [],
+    argList: []
 }
 
 
-export default class UserCrud extends Component{
+export default class CrudTest extends Component{
     state = {...initialState}
 
     
     componentWillMount(){
-        //Ainda sera necessario fazer a conexão quando o componente for montado, solicitando a lista de usuarios
-        //this.props.setConnection("Disconnected", "Connecting...") //Loading while not connected
-        this.verifyConnection() //Verify connection
+        this.verifyConnection()
         console.log(this.props)
     }
-    async verifyConnection(){
-        //console.log(this.state.nextConnectionTry)
-        if(this.state.nextConnectionTry === 0){
-            //this.props.setConnection("Disconnected", "Connecting...")
-            await axios(baseUrl).then(resp =>{
-                //console.log("!")
-                this.setState({connected: true,list: resp.data})
-                //this.props.setConnection("Connected", "Connected")
-                return true;
-            }).catch(err=>{
-                this.setState({connected: false, list: []})
-                console.log(err)
-                this.props.setConnection("Disconnected", "Server offline.")
-                setTimeout(() => this.verifyConnection(), 10000)// after 10s retry connection
-                return false;
-            })
-        }else
-            //this.setState( {nextConnectionTry: this.state.nextConnectionTry - 1} )
-            this.setState( {nextConnectionTry: 10} )
-            return false;
-    }
-    
 
-    clear(){
-        this.setState({user: initialState.user})
+    async verifyConnection(){
+        await axios(baseUrl).then(resp =>{
+            this.setState({connected: true,list: resp.data})
+            return true;
+        }).catch(err=>{
+            this.setState({connected: false, list: []})
+            console.log(err)
+            this.props.setConnection("Disconnected", "Server offline.")
+            return false;
+       })
+    }    
+
+    clear(){ //clear form
+        this.setState({testForm: initialState.testForm})
     }
 
 
@@ -72,54 +60,134 @@ export default class UserCrud extends Component{
             emailForm.addEventListener("click", () => emailForm.classList.remove("error"))
             return}
 
-        const user = this.state.user
-        const method = user.ID_User ? 'put' : 'post'
+        const testForm = this.state.testForm
+        const method = testForm.ID_testForm ? 'put' : 'post'
         //similar a axios.blablabla, porém precios usar notação com [] pois temos uma string após o "ponto"
-        axios[method](baseUrl, user).then(resp => {
+        axios[method](baseUrl, testForm).then(resp => {
             const list = this.getUpdatedList(resp.data)
 
-            this.setState({user:initialState.user, list})
+            this.setState({testForm:initialState.testForm, list})
         }).catch(e=>{
             console.log(e)
         })
     }
-    getUpdatedList(user, add = true){
-        const list = this.state.list.filter(u => u.ID_User !== user.ID_User)
+    getUpdatedList(testForm, add = true){
+        const list = this.state.list.filter(u => u.ID_testForm !== testForm.ID_testForm)
         if(add)
-                list.unshift(user)
+                list.unshift(testForm)
 
         return list
     }
 
     updateField(event){
-        const user = {...this.state.user}
-        user[event.target.name] = event.target.value
-        this.setState({user})
+        const testForm = {...this.state.testForm}
+        testForm[event.target.name] = event.target.value
+        this.setState({testForm})
+    }
+
+
+    nameValidation = {
+        text:"name",
+        textHelper:"*Obrigatorio",
+        placeholder:"Newton",
+        setFormValid: this.setFormValid.bind(this),
+        validation: [{
+            validationType:"length",
+            args:{ min:5, max:127 },
+            textWhenInvalid:"O nome do teste deve conter no minimo 5 caracters"}
+        ]
+    }
+    descriptionValidation = {
+        text:"Descrição",
+        textHelper:"",
+        placeholder:"Correção da primeira atividade computacional",
+        setFormValid: this.setFormValid.bind(this),
+        validation: [{
+            validationType:"length",
+            args:{ min:undefined, max:127 },
+            textWhenInvalid:"A descrição esta muito longa."}
+        ]
+    }
+
+    argsValidation = {
+        text:"args",
+        textHelper:"",
+        placeholder:["@(x) exp(-x^2) - cos(x)", "@(x) x^2 + 2*x - 50", "@(x) 2*x + 2", "[1 2 1; 2 -3 -1; 3 -1 -2]", "1"][Math.floor(Math.random()*5)],
+        setFormValid: this.setFormValid.bind(this),
+        validation: [{
+            validationType:"length",
+            args:{ min:undefined, max:127 },
+            textWhenInvalid:"O argumento esta muito longo."}
+        ]
+    }
+
+    setFormValid(form, value){
+        switch(form){
+            case 'Name' : this.setState({ Name:value  }); break
+            case 'Password' : this.setState({Password:value}); break
+            case 'username' : this.setState({username:value}); break
+            case 'password' : this.setState({password:value}); break
+            default: this.setState( { [form]:value } )
+        }
+        //this.setstate( {this.state[form]:value} )
+    }
+    addArg(e){
+        if(this.state.args === null) return
+        let argList = this.state.argList
+        argList.push(this.state.args)
+        this.setState({argList: argList, args:null, Args:false})
+        e.target.value = ''
+        this.functionToBeTested()
+    }
+
+    functionToBeTested(){
+        let argList = this.state.argList
+        argList = argList.reduce(function(prev, current){
+            return `${prev}${current} ,`
+        },'')
+        //Sempre sobra uma virgula no final
+        argList = argList.slice(0, -1); //remove a virgula
+        return(<React.Fragment>{argList}</React.Fragment>)
+        
     }
 
     renderForm(){
         return(
             <div className="form">
                 <div className="row">
-                    <div className="col-12 col-md-3">
+                    {/* <div className="col-12 col-md-3">
                         <div className="form-group">
                             <label>Nome</label>
                             <input type="text" className="form-control" id='nameForm'
-                            name="Name" value={this.state.user.Name}
+                            name="Name" value={this.state.testForm.Name}
                             onChange={e=>this.updateField(e)}
                             placeholder="Digite o nome aqui..."/>
                         </div>
-                    </div>
+                    </div> */}
+                    <Form width={4} widthM={12} {...this.nameValidation}/>
                     
-                    <div className="col-12 col-md-6">
+                    <Form width={8} widthM={12} {...this.descriptionValidation}/>
+
+                    <Form width={4} widthM={10} {...this.argsValidation}/>
+                    
+                    <button className="btn btn-secundary add" onClick={e => this.addArg(e)}>+</button>
+                    
+                    <p className="text-danger">{this.state.name || 'function'}</p><strong>(</strong>{this.functionToBeTested()}<strong>)</strong>
+                    
+                    {/* <span> TODO -------------- Exemplo da função a ser executada...
+                        Preparando: <strong>{`${this.state.name || "function"}`}</strong>
+                        (  )
+                    </span> */}
+                    <hr/>
+                    {/* <div className="col-12 col-md-6">
                         <div className="form-group">
                             <label>E-mail</label>
                             <input type="text" className="form-control" id='emailForm'
-                            name="Description" value={this.state.user.Description}
+                            name="Description" value={this.state.testForm.Description}
                             onChange={e=>this.updateField(e)}
                             placeholder="Digite o e-mail aqui..."/>
                         </div>
-                    </div>
+                    </div> */}
                 </div>
                 <hr/>
                 <div className="row">
@@ -136,13 +204,13 @@ export default class UserCrud extends Component{
         )
     }
 
-    load(user){
-        this.setState({user})
+    load(testForm){
+        this.setState({testForm})
     }
 
-    remove(user){
-        axios.delete(`${baseUrl}/${user.ID_User}`).then(resp => {
-            const list = this.getUpdatedList(user, false)
+    remove(testForm){
+        axios.delete(`${baseUrl}/${testForm.ID_testForm}`).then(resp => {
+            const list = this.getUpdatedList(testForm, false)
             this.setState({list})
         })
     }
@@ -164,17 +232,16 @@ export default class UserCrud extends Component{
         )
     }
     renderRows(){
-        return this.state.list.map(user=>{
+        return this.state.list.map(testForm=>{
             return(
-                <tr key={user.ID_User}>
-                    <td>{user.ID_User}</td>
-                    <td>{user.Name}</td>
-                    <td>{user.Description}</td>
+                <tr key={testForm.ID_testForm}>
+                    <td>{testForm.Name}</td>
+                    <td>{testForm.Description}</td>
                     <td>
-                        <button className="btn btn-warning" onClick={() => this.load(user)}>
+                        <button className="btn btn-warning" onClick={() => this.load(testForm)}>
                             <i className="fa fa-pencil"></i>
                         </button>
-                        <button className="btn btn-danger ml-2" onClick={() => this.remove(user)}>
+                        <button className="btn btn-danger ml-2" onClick={() => this.remove(testForm)}>
                             <i className="fa fa-trash"></i>
                         </button>
                     </td>
@@ -184,11 +251,12 @@ export default class UserCrud extends Component{
     }
     
     //requisição GET com a API, se der sucesso ele troca o estado da aplicação para conectado
-
+    
     render(){
         return(
-        <Main {...headerProps}>
+            <Main {...headerProps}>
             {this.renderForm()}
+            
             {this.renderTable()}
         </Main>
         )

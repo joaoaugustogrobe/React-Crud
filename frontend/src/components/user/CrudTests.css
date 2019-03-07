@@ -4,4 +4,12 @@
     border-right-width: 3px;
     background-color: rgba(200,0,0,0.03);
 }
+.btn.add{
+    box-sizing: content-box;
+    height: 24px;
+    align-self: top;
+    margin-top: 30px;
+    margin-left: 18px;
+}
+
 
