@@ -1,58 +1,53 @@
-# Crud
-Projeto de cadastro de usuarios feito em React.
-O projeto foi desenvolvido durante o curso de React - Cod3r, porém todo o backend foi alterado, não usando o processo visto no curso.
-![Projeto](https://i.imgur.com/7OX4xmb.png)
+# React-Crud (Deprecated)
 
-## Objetivos:
-Criar uma aplicação Web feita em React que faça as 4 operações basicas de um cadastro (Criar, Ler, Atualizar e Deletar) usuários.
+**Note:** This project is deprecated and was built as my first React project a few years ago.
+
+![Project](https://i.imgur.com/7OX4xmb.png)
+
+User registration project made in React.
+This project was developed during the React - Cod3r course, but the entire backend was changed, not using the process seen in the course.
 
 
-## Execução:
-Este projeto foi dividido em duas partes:
+## Objectives:
+Create a React-based web application that performs the 4 basic operations of user registration (Create, Read, Update, and Delete).
 
-~~Servidor json:
-Servidor simples que trata as requisições feitas pela aplicação front-end.
-Este servidor também gerencia um arquivo .json que armazena todos os dados dos usuarios~~
+## Execution:
+This project was divided into two parts:
 
-### Servidor Express
-Após criar o servidor json (visto dentro do curso) decidi criar meu proprio servidor usando Express e MySql (o mesmo se encontra em meu outro repositório) e integrar com este projeto React. Mais informações sobre o backend, acesse: https://github.com/joaoaugustogrobe/Express-CRUD-Backend
+~~JSON Server:
+A simple server that handles requests made by the front-end application.
+This server also manages a .json file that stores all user data~~
 
+### Express Server
+After creating the JSON server (seen within the course), I decided to create my own server using Express and MySQL (located in my other repository) and integrate it with this React project. For more information about the backend, visit: https://github.com/joaoaugustogrobe/Express-CRUD-Backend
 
 #### Front-end / React
-Parte responsavel por disponibilizar uma interface grafica para o usuário e fazer as requisições com o servidor.
+The part responsible for providing a graphical interface for the user and making requests to the server.
 
+## What I learned:
+During this project, I better consolidated the concepts:
 
-## O que aprendi:
-Durante este projeto, consolidei melhor os conceitos:
+- [x] HTML requests through Axios;
+- [x] React components;
+- [x] Basic notions about Bootstrap;
+- [x] Font-awesome library;
+- [x] Navigation using React-router;
 
-- [x] requisições HTML através do Axios;
-- [x] componentes do React;
-- [x] Noções basicas sobre o bootstrap;
-- [x] Biblioteca font-awesome;
-- [x] Navegação utilizando React-router;
-
-
-
-## Proxima etapa / Indo além do curso
-Após terminar o curso, pretendo alterar o back-end do servidor, utilizando um banco SQL e um banco NoSQL, para testar as diferenças de desempenho entre as 3 formas e a facilidade de criação do ambiente em cada uma das formas.
+## Next steps / Going beyond the course
+After finishing the course, I plan to change the server back-end, using an SQL database and a NoSQL database, to test the differences in performance between the 3 methods and the ease of creating the environment in each of the ways.
 - [x] Back-end
-- [x] Banco de dados Sql (MySql)
-- [ ] Banco de dados NoSQL
-- [x] Invalidar input vazio
-- [ ] Validação do campo de email (necessario sintaxe <>@<>.<> ou similar)
+- [x] SQL Database (MySQL)
+- [ ] NoSQL Database
+- [x] Invalidate empty input
+- [ ] Email field validation (required syntax <>@<>.<> or similar)
 
+## Running the service:
+* To run this project, you need to download the backend server (link already posted above).
 
-
-## Executando o serviço:
-* Para executar este projeto é necessario baixar o servidor backend (link já postado anteriormente).
-
-Entra no diretorio frontend e executa a aplicação react - http://localhost:3000 * Entrar neste link para visualizar a aplicação
+Enter the frontend directory and run the React application - http://localhost:3000 * Enter this link to view the application
 ```
 cd frontend && npm start
 ```
 
-~~Entra no diretorio backend e executa o servidor json - http://localhost:3001
+~~Enter the backend directory and run the JSON server - http://localhost:3001
 cd backend && npm start~~
-
-
-
